@@ -9,12 +9,34 @@ mjAPI.start()
 
 const bot = new TelegramBot(token, {polling: true})
 
-const sendError = (chatId, errStr) => {
-	bot.sendMessage(chatId, 'Uh-oh! I couldn\'t render your formula! ' + errStr)
+const sendError = (chatId, errStr, reply) => {
+	var options = {}
+
+	if(reply) {
+		options['reply_to_message_id'] = reply
+	}
+
+	bot.sendMessage(chatId, 'Uh-oh! I couldn\'t render your formula! ' + 
+		errStr, options)
 }
 
+bot.onText(/\/start/, (msg, match) => {
+	bot.sendMessage(msg.chat.id, 'Hello! Send me your equations, ' +
+		'I\'ll typeset them for you')
+})
+
+bot.onText(/\/help/, (msg, match) => {
+	bot.sendMessage(msg.chat.id, 'Just send me the equation, I\'ll do the rest')
+})
+
 bot.on('message', msg => {
-	const chatId = msg.chat.id
+	if(msg.entities) {
+		// Ignore non text messages, including bot commands
+		return
+	}
+
+	const chatId = msg.chat.id,
+		msgId =  msg.message_id
 
 	mjAPI.typeset({
 		math: msg.text,
@@ -22,7 +44,7 @@ bot.on('message', msg => {
 		svg: true,
 	}, data => {
 		if (data.errors) {
-			sendError(chatId, data.errors.join('\n'))
+			sendError(chatId, data.errors.join('\n'), msgId)
 			return
 		}
 
@@ -32,9 +54,9 @@ bot.on('message', msg => {
 		}
 
 		svg2png(data.svg, {width}).then(png => {
-			bot.sendPhoto(chatId, png)
+			bot.sendPhoto(chatId, png, {reply_to_message_id: msgId})
 		}).catch(e => {
-			sendError(chatId, e)
+			sendError(chatId, e, msgId)
 		})
 	})
 

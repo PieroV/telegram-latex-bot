@@ -1,0 +1,14 @@
+{
+  "name": "telegram-latex-bot",
+  "version": "1.0.0",
+  "description": "A bot for Telegram that renders LaTeX equations.",
+  "main": "bot.js",
+  "author": "Piero V. <vogliadifarniente AT gmail DOT com>",
+  "license": "Beerware",
+  "private": false,
+  "dependencies": {
+    "mathjax-node": "^1.2.1",
+    "node-telegram-bot-api": "^0.28.0",
+    "svg2png": "^4.1.1"
+  }
+}

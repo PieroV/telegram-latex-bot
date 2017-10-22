@@ -2,8 +2,9 @@ const TelegramBot = require('node-telegram-bot-api'),
 	mjAPI = require('mathjax-node'),
 	svg2png = require('svg2png')
 
-const token = 'YOUR-BOT-TOKEN'
-const minWidth = 500
+const token = 'YOUR-BOT-TOKEN',
+	scale = 30,
+	minWidth = 400
 
 mjAPI.start()
 
@@ -48,7 +49,7 @@ bot.on('message', msg => {
 			return
 		}
 
-		var width = data.width.substring(0, data.width.length - 2)
+		var width = (data.width.substring(0, data.width.length - 2)) * scale
 		if(width < minWidth) {
 			width = minWidth
 		}
